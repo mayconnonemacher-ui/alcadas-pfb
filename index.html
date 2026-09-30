@@ -39,7 +39,9 @@ h2{font-size:clamp(21px,2.6vw,27px);font-weight:750}
 h3{font-size:17px;font-weight:700;font-stretch:92%}
 p{margin:0}
 .eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.lede{max-width:68ch;color:var(--muted);font-size:16px}
+.lede{color:var(--muted);font-size:16px}
+/* texto corrido justificado e com a mesma largura do conteúdo */
+p,.lede,.small,.foot,.rules li,.rlist .a,.case .ans p,.case .why,.check li,.step .ex,.result dd,.result ul li,tr.note td,tbody th .foot{text-align:justify;text-justify:inter-word;hyphens:auto;-webkit-hyphens:auto}
 .num{font-variant-numeric:tabular-nums}
 a{color:var(--accent)}
 button,input,select{font:inherit;color:inherit}
@@ -174,7 +176,7 @@ tr.note td{background:var(--surface-2);font-size:13px;white-space:normal}
   </span></div>
 </div></div>
 
-<div class="wrap">
+<div class="wrap" lang="pt-BR">
   <header class="hero">
     <span class="eyebrow">Grupo Pra Frente Brasil · Proposta para o Acordo de Sócios</span>
     <h1>Quem aprova o quê nas operações internas</h1>
