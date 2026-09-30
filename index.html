@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="description" content="Proposta de alçadas das operações internas do Grupo Pra Frente Brasil para avaliação dos sócios.">
+<style>html{color-scheme:light}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Alçadas do Grupo PFB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: coluna única de leitura (máx. 1120px) com barra fixa de régua; seções ancoradas: como funciona → níveis → simulador → matriz → casos → parâmetros → sócios */
+:root{
+  --bg:#F4F7FA; --surface:#FFFFFF; --surface-2:#EAF0F6; --ink:#13202B; --muted:#586775; --line:#D6DFE7;
+  --accent:#1B4F8A; --accent-ink:#FFFFFF; --brand-y:#F2C230; --brand-y-ink:#2A2100; --danger:#A8251C; --ok:#1E6B48;
+  --n1:#E3EDF7; --n1-fg:#13202B; --n2:#BFD5EC; --n2-fg:#13202B; --n3:#86AEDA; --n3-fg:#0E1A24;
+  --n4:#3E73B3; --n4-fg:#FFFFFF; --n5:#1B4F8A; --n5-fg:#FFFFFF; --ns:#F2C230; --ns-fg:#2A2100;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif; --f-body:"Public Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E151B; --surface:#16212A; --surface-2:#1C2A36; --ink:#E4ECF3; --muted:#9BAAB8; --line:#2A3946;
+  --accent:#7FB0E8; --accent-ink:#0B1520; --brand-y:#E3B42B; --brand-y-ink:#1E1700; --danger:#F08A80; --ok:#6CC79C;
+  --n1:#1E2E3D; --n1-fg:#E4ECF3; --n2:#26425E; --n2-fg:#E4ECF3; --n3:#2F5C8A; --n3-fg:#F2F6FA;
+  --n4:#4A7FBF; --n4-fg:#08121B; --n5:#8DBBF0; --n5-fg:#08121B; --ns:#E3B42B; --ns-fg:#1E1700; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E151B; --surface:#16212A; --surface-2:#1C2A36; --ink:#E4ECF3; --muted:#9BAAB8; --line:#2A3946;
+  --accent:#7FB0E8; --accent-ink:#0B1520; --brand-y:#E3B42B; --brand-y-ink:#1E1700; --danger:#F08A80; --ok:#6CC79C;
+  --n1:#1E2E3D; --n1-fg:#E4ECF3; --n2:#26425E; --n2-fg:#E4ECF3; --n3:#2F5C8A; --n3-fg:#F2F6FA;
+  --n4:#4A7FBF; --n4-fg:#08121B; --n5:#8DBBF0; --n5-fg:#08121B; --ns:#E3B42B; --ns-fg:#1E1700; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;padding-inline:16px}
+.wrap{max-width:1120px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-stretch:88%;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4.2vw,42px);font-weight:800;letter-spacing:-.01em}
+h2{font-size:clamp(21px,2.6vw,27px);font-weight:750}
+h3{font-size:17px;font-weight:700;font-stretch:92%}
+p{margin:0}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{max-width:68ch;color:var(--muted);font-size:16px}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* barra fixa */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px}
+.bar-in{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
+.nav{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;font-weight:600}
+.nav a{text-decoration:none;color:var(--muted)} .nav a:hover{color:var(--ink)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:3px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.seg-label{font-size:12px;color:var(--muted);margin-right:6px}
+
+section{padding-top:44px;scroll-margin-top:70px;display:grid;gap:18px}
+.head{display:grid;gap:8px}
+
+/* hero */
+.hero{padding-top:28px;display:grid;gap:14px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+
+/* camadas e papéis */
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:8px;align-content:start;min-width:0}
+.layer-tag{font-family:var(--f-display);font-weight:800;font-size:13px;color:var(--accent);letter-spacing:.04em}
+.small{font-size:13px;color:var(--muted)}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.rules li{border-left:3px solid var(--brand-y);padding:4px 0 4px 12px;min-width:0}
+.rules b{display:block}
+
+/* régua de níveis */
+.ladder{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;align-items:end}
+.step{border-radius:var(--r);padding:12px;display:grid;gap:6px;min-width:0;align-content:start}
+.step .lv{font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1}
+.step .who{font-weight:600;font-size:14px;line-height:1.3}
+.step .ex{font-size:12px;opacity:.9}
+.s1{background:var(--n1);color:var(--n1-fg);min-height:150px}.s2{background:var(--n2);color:var(--n2-fg);min-height:170px}
+.s3{background:var(--n3);color:var(--n3-fg);min-height:190px}.s4{background:var(--n4);color:var(--n4-fg);min-height:215px}
+.s5{background:var(--n5);color:var(--n5-fg);min-height:240px}.s6{background:var(--ns);color:var(--ns-fg);min-height:265px}
+@media (max-width:860px){.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}.step{min-height:0!important}}
+
+/* chips de nível */
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:2.6em;padding:2px 9px;border-radius:999px;font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:.02em;white-space:nowrap}
+.c1{background:var(--n1);color:var(--n1-fg)}.c2{background:var(--n2);color:var(--n2-fg)}.c3{background:var(--n3);color:var(--n3-fg)}
+.c4{background:var(--n4);color:var(--n4-fg)}.c5{background:var(--n5);color:var(--n5-fg)}.cS{background:var(--ns);color:var(--ns-fg)}
+.cX{background:transparent;color:var(--danger);border:1.5px solid var(--danger)}.cR{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+
+/* simulador */
+.sim{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px}
+@media (max-width:860px){.sim{grid-template-columns:1fr}}
+.form{display:grid;gap:14px}
+.field{display:grid;gap:6px}
+.field label,.field .lab{font-size:13px;font-weight:600}
+select,input[type=number]{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+.quick{display:flex;flex-wrap:wrap;gap:6px}
+.quick button{border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
+.toggles{display:flex;flex-wrap:wrap;gap:8px 18px}
+.toggles label{display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+.toggles input{width:18px;height:18px;accent-color:var(--accent)}
+.result{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-width:0}
+.result-top{display:flex;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.result-top .chip{font-size:18px;padding:5px 14px}
+.result dl{margin:0;display:grid;grid-template-columns:minmax(110px,150px) minmax(0,1fr);gap:0}
+.result dt,.result dd{margin:0;padding:11px 16px;border-bottom:1px solid var(--line)}
+.result dt{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.result dd{font-weight:500}
+.result ul{margin:0;padding:12px 16px 14px 34px;display:grid;gap:4px;font-size:14px;color:var(--muted)}
+@media (max-width:520px){.result dl{grid-template-columns:1fr}.result dt{border-bottom:0;padding-bottom:0}}
+
+/* matriz */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:13.5px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+thead th{font-size:12px;font-weight:700;letter-spacing:.03em;background:var(--surface-2);position:sticky;top:0}
+tbody th{font-weight:600;min-width:230px}
+td.cell{white-space:nowrap}
+td.cell span{display:inline-block;border-radius:6px;padding:2px 7px}
+.l1 span{background:var(--n1);color:var(--n1-fg)}.l2 span{background:var(--n2);color:var(--n2-fg)}.l3 span{background:var(--n3);color:var(--n3-fg)}
+.l4 span{background:var(--n4);color:var(--n4-fg)}.l5 span{background:var(--n5);color:var(--n5-fg)}
+td.na{color:var(--muted)}
+tr.note td{background:var(--surface-2);font-size:13px;white-space:normal}
+.foot{font-size:12.5px;color:var(--muted)}
+
+/* regras sem valor */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.rlist{margin:0;padding:0;list-style:none;display:grid;gap:9px}
+.rlist li{display:grid;gap:2px;padding-bottom:9px;border-bottom:1px dashed var(--line)}
+.rlist li:last-child{border-bottom:0;padding-bottom:0}
+.rlist .t{font-weight:600;font-size:14px}.rlist .a{font-size:13.5px;color:var(--muted)}
+.rlist .a strong{color:var(--ink);font-weight:600}
+
+/* casos */
+.cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.case{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:8px;align-content:start;min-width:0}
+.case .ctx{font-size:12.5px;color:var(--muted)}
+.case .ans{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding-top:8px;border-top:1px solid var(--line)}
+.case .ans p{font-size:14px;font-weight:500}
+.case .why{font-size:12.5px;color:var(--muted)}
+.linkbtn{justify-self:start;border:0;background:none;padding:0;color:var(--accent);font-weight:600;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+/* parâmetros */
+.params{display:grid;grid-template-columns:minmax(0,1fr);gap:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.prow{display:grid;grid-template-columns:minmax(0,2.2fr) repeat(3,minmax(0,1fr)) minmax(0,1.3fr);gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.prow:last-child{border-bottom:0}
+.prow.h{background:var(--surface-2);font-size:12px;font-weight:700;letter-spacing:.03em}
+.opt{font-size:13.5px}.opt.sel{font-weight:700;color:var(--accent)}
+.prow input{padding:6px 8px}
+@media (max-width:760px){.prow{grid-template-columns:1fr 1fr 1fr}.prow .pl{grid-column:1/-1}.prow.h{display:none}.prow .pc{grid-column:1/-1}}
+
+/* sócios */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.check{margin:0;padding:0;list-style:none;display:grid;gap:7px}
+.check li{padding-left:22px;position:relative;font-size:14px}
+.check li::before{content:"";position:absolute;left:3px;top:.55em;width:9px;height:9px;border-radius:2px;background:var(--ns)}
+.check.blue li::before{background:var(--n4)}
+.callout{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--r);background:var(--surface);padding:14px 16px;display:grid;gap:6px}
+@media (prefers-reduced-motion:no-preference){.result,.case{transition:border-color .2s}.flash{animation:fl .8s ease}@keyframes fl{from{box-shadow:0 0 0 3px var(--brand-y)}to{box-shadow:0 0 0 0 transparent}}}
+</style>
+
+
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <nav class="nav" aria-label="Seções">
+    <a href="#como">Como funciona</a><a href="#niveis">Níveis</a><a href="#simulador">Simulador</a><a href="#matriz">Matriz</a><a href="#casos">Casos</a><a href="#parametros">Parâmetros</a><a href="#socios">Com os sócios</a>
+  </nav>
+  <div><span class="seg-label">Régua em avaliação</span><span class="seg" role="group" aria-label="Régua de valores">
+    <button type="button" data-preset="cons" aria-pressed="false">Conservadora</button>
+    <button type="button" data-preset="prop" aria-pressed="true">Proposta</button>
+    <button type="button" data-preset="agil" aria-pressed="false">Ágil</button>
+  </span></div>
+</div></div>
+
+<div class="wrap">
+  <header class="hero">
+    <span class="eyebrow">Grupo Pra Frente Brasil · Proposta para o Acordo de Sócios</span>
+    <h1>Quem aprova o quê nas operações internas</h1>
+    <p class="lede">Uma régua única de níveis de aprovação para compras, serviços, manutenção, investimentos, pessoas, acordos, clientes e ativos. Os valores estão em avaliação: troque a régua no topo e veja, nos mesmos casos do dia a dia, quem passaria a decidir.</p>
+    <div class="meta"><span>Minuta para discussão · 30/09/2026</span><span>Diretoria Financeira e de Controladoria</span><span>Valores entre colchetes são propostas</span></div>
+  </header>
+
+  <section id="como">
+    <div class="head"><span class="eyebrow">Como funciona</span><h2>Três camadas, cada uma com um dono</h2>
+      <p class="lede">O Acordo de Sócios não precisa carregar a operação. Ele fixa os princípios e o que é dos sócios; a régua de valores é revisada todo ano; e o detalhe de cada processo fica no sistema.</p></div>
+    <div class="grid3">
+      <div class="panel"><span class="layer-tag">1 · Acordo de Sócios e Aditivo</span><h3>Princípios e matérias dos sócios</h3><p class="small">Dupla aprovação, proibição de fracionar, conflito de interesses e o que só os sócios decidem. Muda raramente e exige assinatura de todos.</p></div>
+      <div class="panel"><span class="layer-tag">2 · Política de Alçadas</span><h3>Níveis e valores desta página</h3><p class="small">Aprovada pelos sócios e revisada uma vez por ano com o orçamento, sem novo aditivo (Cláusula 3.5 do Aditivo).</p></div>
+      <div class="panel"><span class="layer-tag">3 · Matriz operacional</span><h3>Workflow no Protheus e no Fluig</h3><p class="small">Cada pedido, contrato ou pagamento percorre os níveis automaticamente. Mantida pela Controladoria e revisada pela Auditoria Interna a cada trimestre.</p></div>
+    </div>
+    <ul class="rules">
+      <li><b>Quem decide não é quem paga</b><span class="small">A aprovação da despesa é do gestor; a liberação no banco é do Financeiro, sempre com duas aprovações.</span></li>
+      <li><b>Fora do orçamento sobe um nível</b><span class="small">E passa a exigir parecer financeiro. Acima de R$ 5 mi, vai aos sócios.</span></li>
+      <li><b>Soma, não fraciona</b><span class="small">Vale o valor total do compromisso: parcelas e pedidos do mesmo objeto com o mesmo fornecedor em 12 meses.</span></li>
+      <li><b>Quem tem interesse não aprova</b><span class="small">Operação que envolva a pessoa ou o seu núcleo familiar passa ao próximo aprovador sem conflito.</span></li>
+    </ul>
+  </section>
+
+  <section id="niveis">
+    <div class="head"><span class="eyebrow">Níveis</span><h2>Seis degraus de aprovação</h2>
+      <p class="lede">Os tetos abaixo são os de compras de materiais, a referência. Cada tipo de operação usa uma fração dessa régua (a matriz mostra todos).</p></div>
+    <div class="ladder" id="ladder"></div>
+    <p class="foot">Onde não há diretoria (Corporativo de Operações, Auto Postos e Governança), a faixa N3 é decidida pelo VP da área. A área de origem da despesa define quem é o “VP da área”. O Diretor Financeiro e de Controladoria dá parecer técnico, não assina sozinho.</p>
+  </section>
+
+  <section id="simulador">
+    <div class="head"><span class="eyebrow">Simulador</span><h2>Teste uma situação real</h2>
+      <p class="lede">Escolha de onde vem a despesa, o tipo e o valor. A resposta mostra quem decide, quem opina e quem libera o pagamento, pela régua selecionada no topo.</p></div>
+    <div class="sim">
+      <form class="panel form" id="simform" onsubmit="return false">
+        <div class="field"><label for="f-area">Área de origem</label><select id="f-area"></select></div>
+        <div class="field"><label for="f-fam">Tipo de operação</label><select id="f-fam"></select></div>
+        <div class="field" id="valbox"><label for="f-val">Valor total do compromisso (R$)</label>
+          <input id="f-val" type="number" min="0" step="1000" inputmode="numeric" value="180000">
+          <div class="quick" id="quick"></div></div>
+        <div class="toggles">
+          <label><input type="checkbox" id="f-orc" checked> Previsto no orçamento</label>
+          <label><input type="checkbox" id="f-pr"> Envolve parte relacionada</label>
+        </div>
+      </form>
+      <div class="result" id="result" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="matriz">
+    <div class="head"><span class="eyebrow">Matriz</span><h2>A régua inteira em uma página</h2>
+      <p class="lede">Teto de cada nível por tipo de operação, dentro do orçamento. Acima do teto do N4, decidem dois administradores; acima de R$ 3 mi, um deles é o Presidente, com parecer financeiro.</p></div>
+    <div class="tbl-wrap"><table id="mtx"></table></div>
+    <div class="rgrid" id="rules-nv"></div>
+  </section>
+
+  <section id="casos">
+    <div class="head"><span class="eyebrow">Casos</span><h2>Como ficaria no dia a dia</h2>
+      <p class="lede">Situações típicas do grupo, respondidas pela régua selecionada. É o melhor teste para os sócios: se alguma resposta parecer errada, o ajuste é no valor do nível, não na regra.</p></div>
+    <div class="cases" id="cases"></div>
+  </section>
+
+  <section id="parametros">
+    <div class="head"><span class="eyebrow">Parâmetros</span><h2>O que os sócios precisam escolher</h2>
+      <p class="lede">Três opções por parâmetro. Clique em uma opção para aplicar a régua completa, ou ajuste os valores à direita para uma régua própria; a página inteira se atualiza.</p></div>
+    <div class="params" id="params"></div>
+    <p class="foot">Fixos em todas as opções: assinatura conjunta Presidente + VP acima de R$ 3 mi; despesa fora do orçamento acima de R$ 5 mi com os sócios; investimento fora do orçamento acima de R$ 1 mi com os sócios; pagamento sempre com duas aprovações eletrônicas. Antes da decisão, a Controladoria levanta no Protheus quantos pedidos de 2026 caíram em cada faixa, para medir quantas aprovações cada opção leva aos VPs.</p>
+  </section>
+
+  <section id="socios">
+    <div class="head"><span class="eyebrow">Com os sócios</span><h2>O que continua na Reunião de Sócios</h2></div>
+    <div class="two">
+      <div class="panel"><h3>Decisões reservadas</h3><ul class="check">
+        <li>Orçamento anual, Plano Anual de Financiamento e quadro de lotação</li>
+        <li>Despesa fora do orçamento acima de R$ 5 mi</li>
+        <li>Investimento fora do orçamento acima de R$ 1 mi</li>
+        <li>Nova dívida fora do Plano acima de R$ [2 mi] no mês (75% acima de R$ 5 mi)</li>
+        <li>Reestruturação de dívida fora do Programa aprovado</li>
+        <li id="li-pr">Transação com parte relacionada acima de R$ [100 mil]</li>
+        <li>Distribuição de lucros e remuneração dos administradores</li>
+        <li>Contrato social, filiais, participações e eleição de diretores</li>
+      </ul></div>
+      <div class="panel"><h3>O que os sócios recebem todo mês</h3><ul class="check blue">
+        <li>Pacote gerencial até o 10º dia útil</li>
+        <li>Relatório das aprovações acima do N4 e das feitas com parecer desfavorável</li>
+        <li>Transações com partes relacionadas do período</li>
+        <li>Exceções: pagamentos sem pedido, fracionamentos detectados, trocas de dados bancários</li>
+      </ul></div>
+    </div>
+    <div class="callout"><h3>Próximos passos</h3><p class="small">Outubro: sócios escolhem a régua e validam os casos. Novembro: a Política de Alçadas entra como Anexo I do Aditivo e o workflow é parametrizado no Protheus e no Fluig, junto com a política de compras. Dezembro: perfis bancários com dupla aprovação e primeiro relatório de exceções.</p></div>
+  </section>
+</div>
+
+<script>
+(function(){
+const P={antonio:"Antonio Deoclides Zini",jean:"Jean Carlos Bevilacqua Zini",jefferson:"Jefferson Fernando Bevilacqua Zini",jaidson:"Jaidson Clei Bevilacqua Zini"};
+const VPT={antonio:"Presidente",jean:"VP Financeiro",jefferson:"VP Operações",jaidson:"VP Marketing e Postos"};
+const AREAS={
+  transp:{n:"Transportadora – operação e filiais",vp:"jefferson",dir:"Diretor de Operações e Logística"},
+  opcorp:{n:"Corporativo de Operações – Compras, Manutenção, RH/DP, Segurança",vp:"jefferson",dir:null},
+  fin:{n:"Corporativo Financeiro – Financeiro, Controladoria, Contábil, Fiscal, TI",vp:"jean",dir:"Diretor Financeiro e de Controladoria"},
+  postos:{n:"Auto Postos, TRR e Marketing",vp:"jaidson",dir:null},
+  adm:{n:"Administradora de Bens",vp:"antonio",dir:null,obs:"Responsável executivo da Administradora de Bens ainda a definir; até lá, o Presidente."},
+  gov:{n:"Governança – Jurídico e Auditoria Interna",vp:"antonio",dir:null}
+};
+const FAM=[
+  {id:"materiais",n:"Compras de materiais, peças, pneus e itens de estoque",f:1,min:1},
+  {id:"manut",n:"Manutenção de frota e instalações",f:1,min:1},
+  {id:"servicos",n:"Serviços de terceiros (contratos operacionais)",f:.6,min:2,obs:"Contrato com prazo acima de 12 meses sobe um nível."},
+  {id:"consult",n:"Consultorias, assessorias e advogados externos",f:.4,min:3},
+  {id:"capex",n:"Investimentos: veículos, equipamentos e obras",f:.5,min:3,capex:true},
+  {id:"juridico",n:"Acordos judiciais e trabalhistas",f:.3,min:3,par:"Jurídico"},
+  {id:"perdas",n:"Descontos, renegociação e baixa de títulos de clientes",f:.2,min:2,perdas:true},
+  {id:"patroc",n:"Doações, patrocínios e brindes",f:.05,min:4,obs:"Doação a partido ou campanha política é vedada, em qualquer valor."},
+  {id:"ativos",n:"Venda ou baixa de ativos (frota e equipamentos)",min:5,ativos:true},
+  {id:"recorrente",n:"Pagamentos recorrentes (folha, tributos, parcelas, combustível sob contrato)",special:"rec"},
+  {id:"financeiras",n:"Operações financeiras (empréstimos, renovações, garantias)",special:"fin"}
+];
+const PRESETS={cons:{L:[5e3,30e3,100e3,500e3],pr:50e3},prop:{L:[10e3,50e3,250e3,1e6],pr:100e3},agil:{L:[20e3,100e3,500e3,1.5e6],pr:250e3}};
+const FIX={conj:3e6,foraSocios:5e6,capexFora:1e6,libBaixa:100e3};
+let S={preset:"prop",L:PRESETS.prop.L.slice(),pr:PRESETS.prop.pr};
+
+const fmt=v=>{if(v>=1e6){return "R$ "+(v/1e6).toLocaleString("pt-BR",{maximumFractionDigits:2})+" mi"}if(v>=1e3){return "R$ "+(v/1e3).toLocaleString("pt-BR",{maximumFractionDigits:1})+" mil"}return "R$ "+v.toLocaleString("pt-BR")};
+const nice=x=>{if(x<=0)return 0;const p=Math.pow(10,Math.floor(Math.log10(x)));const m=x/p;const s=[1,1.5,2,2.5,3,5,10].find(v=>m<=v*1.0001);return s*p};
+const ceilings=F=>S.L.map(v=>nice(v*F.f));
+const chip=l=>`<span class="chip c${l}">${l==="S"?"Sócios":l==="X"?"Vedado":l==="R"?"Rotina":"N"+l}</span>`;
+const vpName=k=>k==="antonio"?`${P.antonio} (Presidente)`:`${P[k]} (${VPT[k]})`;
+const first=k=>P[k].split(" ")[0];
+
+function who(l,A,v){
+  if(l===1)return "Gestor imediato (coordenador, gerente de filial ou de posto)";
+  if(l===2)return "Gerente do departamento";
+  if(l===3)return A.dir;
+  if(l===4)return vpName(A.vp);
+  if(l===5){if(A.vp==="antonio")return "Presidente Antonio Deoclides Zini + um Vice-Presidente";
+    return v>FIX.conj?`Presidente Antonio Deoclides Zini + ${first(A.vp)} (${VPT[A.vp]})`:`${first(A.vp)} (${VPT[A.vp]}) + outro VP ou o Presidente`}
+  return "Reunião de Sócios";
+}
+function libera(l,A,v){
+  const vp=A.vp==="antonio"?"Presidente":`${first(A.vp)} (${VPT[A.vp]})`;
+  if(l==="S"||v>FIX.conj)return "Presidente + VP da área, com dupla aprovação eletrônica";
+  if(v<=FIX.libBaixa)return "Gerente Financeiro + Coordenador Financeiro";
+  if(v<=S.L[3])return `Gerente Financeiro + ${vp}`;
+  return "Os dois administradores que aprovaram";
+}
+function evaluate(q){
+  const A=AREAS[q.area],F=FAM.find(f=>f.id===q.fam),v=+q.valor||0,rules=[],par=[];
+  if(A.obs)rules.push(A.obs);
+  if(F.special==="rec")return{l:"R",decide:"Não segue faixa de valor: a programação semanal é aprovada no Comitê de Caixa (Diretor Financeiro, Gerente Financeiro e VP da área).",par:["Controladoria confere a folha e os tributos antes da programação"],lib:`Gerente Financeiro + ${A.vp==="antonio"?"Presidente":first(A.vp)+" ("+VPT[A.vp]+")"}`,rules:rules.concat(["Vale para folha e encargos, tributos, parcelas de dívidas já contratadas, combustível e fornecimentos sob contrato vigente.","Hoje, pela Cláusula 14ª §7º, pagamentos acima de R$ 5 mi dependeriam só da assinatura do Presidente."])};
+  if(F.special==="fin")return{l:5,decide:"Segue a Parte C do Anexo I do Aditivo: renovação em condições iguais ou melhores por dois administradores; dívida nova e reestruturação conforme o Plano Anual de Financiamento e o Programa.",par:["Diretor Financeiro, sempre (custo, prazo, garantias, caixa de 13 semanas e alavancagem)"],lib:"Presidente + VP, com dupla aprovação eletrônica",rules:rules.concat(["Garantia a sócios pessoas físicas, familiares ou terceiros é vedada."])};
+  if(q.pr){
+    if(v<=S.pr)return{l:5,decide:`Presidente + um VP cujo núcleo familiar não tenha interesse na operação`,par:v>50e3?["Diretor Financeiro (condições de mercado)"]:[],lib:libera(5,A,v),rules:rules.concat(["Se for recorrente entre empresas do grupo e estiver no contrato-quadro anual aprovado pelos sócios, segue o contrato.","Quem tem interesse, direto ou do núcleo familiar, não aprova."])};
+    return{l:"S",decide:"Reunião de Sócios, por maioria absoluta do capital",par:["Diretor Financeiro (condições de mercado)"],lib:libera("S",A,v),rules:rules.concat([`Parte relacionada acima de ${fmt(S.pr)}: decisão dos sócios (Cláusula 40ª §5º e Aditivo, Cláusula 7.3).`,"Se for recorrente entre empresas do grupo e estiver no contrato-quadro anual, segue o contrato."])};
+  }
+  const c=ceilings(F);let l=F.ativos?5:1;
+  if(!F.ativos){while(l<=4&&v>c[l-1])l++}
+  if(l<F.min){l=F.min;rules.push(`Este tipo de operação começa no nível N${F.min}.`)}
+  if(!q.orc){
+    par.push("Diretor Financeiro (operação fora do orçamento)");
+    if(F.capex){if(v>FIX.capexFora){l="S";rules.push("Investimento fora do orçamento acima de R$ 1 mi: decisão dos sócios (Cláusula 9ª, “d”).")}else{l=5;rules.push("Investimento fora do orçamento até R$ 1 mi: Presidente + VP da área.")}}
+    else{l=Math.min(5,l+1);rules.push("Fora do orçamento: sobe um nível.");if(v>FIX.foraSocios){l="S";rules.push("Fora do orçamento e acima de R$ 5 mi: decisão dos sócios (Cláusula 9ª, “h”).")}}
+  }
+  if(l===3&&!A.dir){l=4;rules.push("Esta área não tem diretoria: a faixa N3 sobe direto ao VP.")}
+  if(v>FIX.conj&&!par.length)par.push("Diretor Financeiro (valor acima de R$ 3 mi)");
+  if(F.ativos){par.push("Diretor Financeiro (valor de mercado, gravames e impacto em covenants)");rules.push("Bem com gravame só é vendido com anuência do credor.")}
+  if(F.perdas&&(l==="S"||l>=4)&&!par.length)par.push("Diretor Financeiro (acima do teto de N3)");
+  if(F.par)par.unshift(F.par);
+  if(F.obs)rules.push(F.obs);
+  if(l===5&&v>FIX.conj)rules.push("Acima de R$ 3 mi, um dos dois é o Presidente.");
+  return{l,decide:who(l,A,v),par,lib:libera(l,A,v),rules};
+}
+
+/* ---------- render: régua ---------- */
+function renderLadder(){
+  const c=ceilings(FAM[0]);
+  const st=[
+    {l:1,t:"Gestor imediato",w:"Coordenador, gerente de filial ou de posto",e:`até ${fmt(c[0])}`},
+    {l:2,t:"Gerente do departamento",w:"Compras, Manutenção, Financeiro, RH, TI, Comercial",e:`até ${fmt(c[1])}`},
+    {l:3,t:"Diretoria",w:"Diretor Financeiro e de Controladoria; Diretor de Operações e Logística",e:`até ${fmt(c[2])}`},
+    {l:4,t:"VP da área",w:"Jean (Financeiro), Jefferson (Operações), Jaidson (Marketing e Postos)",e:`até ${fmt(c[3])}`},
+    {l:5,t:"Dois administradores",w:"VP da área + outro VP ou o Presidente; acima de R$ 3 mi, Presidente Antonio + VP",e:`acima de ${fmt(c[3])}`},
+    {l:6,t:"Sócios",w:"Reunião de Sócios: fora do orçamento acima de R$ 5 mi e demais matérias reservadas",e:"conforme Acordo"}
+  ];
+  document.getElementById("ladder").innerHTML=st.map(s=>`<div class="step s${s.l}"><span class="lv">${s.l===6?"Sócios":"N"+s.l}</span><span class="who">${s.t}</span><span class="ex">${s.w}</span><span class="ex num"><b>${s.e}</b></span></div>`).join("");
+}
+
+/* ---------- simulador ---------- */
+const fa=document.getElementById("f-area"),ff=document.getElementById("f-fam"),fv=document.getElementById("f-val"),fo=document.getElementById("f-orc"),fp=document.getElementById("f-pr");
+fa.innerHTML=Object.entries(AREAS).map(([k,a])=>`<option value="${k}">${a.n}</option>`).join("");
+ff.innerHTML=FAM.map(f=>`<option value="${f.id}">${f.n}</option>`).join("");
+fa.value="opcorp";
+document.getElementById("quick").innerHTML=[5e3,40e3,180e3,600e3,2e6,4e6,8e6].map(v=>`<button type="button" data-v="${v}">${fmt(v)}</button>`).join("");
+document.getElementById("quick").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;fv.value=b.dataset.v;renderSim()});
+[fa,ff,fv,fo,fp].forEach(el=>el.addEventListener("input",renderSim));
+function renderSim(){
+  const q={area:fa.value,fam:ff.value,valor:fv.value,orc:fo.checked,pr:fp.checked};
+  const F=FAM.find(f=>f.id===q.fam);
+  document.getElementById("valbox").hidden=false;
+  const r=evaluate(q);
+  const lvlName=r.l==="S"?"Decisão dos sócios":r.l==="R"?"Pagamento recorrente programado":"Nível "+r.l;
+  document.getElementById("result").innerHTML=`<div class="result-top">${chip(r.l)}<div><div class="eyebrow">${lvlName}</div><strong class="num">${F.special?F.n:fmt(+q.valor||0)+" · "+F.n}</strong></div></div>
+  <dl><dt>Quem decide</dt><dd>${r.decide}</dd>
+  <dt>Parecer</dt><dd>${r.par.length?r.par.join("; "):"Não exigido"}</dd>
+  <dt>Libera o pagamento</dt><dd>${r.lib}<div class="small">Duas aprovações eletrônicas; quem prepara o pagamento não aprova.</div></dd></dl>
+  ${r.rules.length?`<ul>${r.rules.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}`;
+}
+
+/* ---------- matriz ---------- */
+function renderMatrix(){
+  const rows=FAM.filter(f=>!f.special).map(F=>{
+    if(F.ativos)return `<tr><th>${F.n}</th><td class="na">—</td><td class="na">—</td><td class="na">—</td><td class="na">—</td><td class="cell l5"><span>qualquer valor</span></td><td>Presidente + VP da área, com parecer financeiro</td></tr>`;
+    const c=ceilings(F);let cells="";
+    for(let i=1;i<=4;i++){cells+=i<F.min?`<td class="na">—</td>`:`<td class="cell l${i} num"><span>até ${fmt(c[i-1])}</span></td>`}
+    cells+=`<td class="cell l5 num"><span>acima de ${fmt(c[3])}</span></td>`;
+    const fora=F.capex?"Até R$ 1 mi: Presidente + VP; acima: sócios":"Sobe um nível; acima de R$ 5 mi: sócios";
+    return `<tr><th>${F.n}${F.obs?`<div class="foot">${F.obs}</div>`:""}${F.par?`<div class="foot">Parecer do ${F.par} em todos os casos.</div>`:""}</th>${cells}<td>${fora}</td></tr>`;
+  }).join("");
+  document.getElementById("mtx").innerHTML=`<thead><tr><th>Tipo de operação (dentro do orçamento)</th><th>N1 Gestor</th><th>N2 Gerente</th><th>N3 Diretoria</th><th>N4 VP da área</th><th>N5 Dois administradores</th><th>Fora do orçamento</th></tr></thead><tbody>${rows}
+  <tr class="note"><td colspan="7"><b>Pagamentos recorrentes</b> (folha, tributos, parcelas já contratadas, combustível sob contrato): não seguem faixa; programação semanal aprovada no Comitê de Caixa e liberada pelo Gerente Financeiro com o VP da área.</td></tr>
+  <tr class="note"><td colspan="7"><b>Operações financeiras</b> (empréstimos, renovações, reestruturação, garantias): Parte C do Anexo I do Aditivo, sempre com parecer financeiro.</td></tr>
+  <tr class="note"><td colspan="7"><b>Partes relacionadas</b>: até ${fmt(S.pr)}, Presidente + um VP sem interesse; acima, sócios por maioria absoluta. Operações recorrentes entre empresas do grupo seguem o contrato-quadro anual.</td></tr></tbody>`;
+}
+const NV=[
+  {h:"Pessoas",i:[
+    ["Admissão dentro do quadro aprovado","<strong>Gerente do departamento + RH</strong>"],
+    ["Admissão fora do quadro","<strong>Presidente + VP da área</strong>"],
+    ["Admissão de familiar até 3º grau","<strong>Conselho Consultivo</strong> (Cláusula 17ª, “d”)"],
+    ["Reajuste ou promoção","Dentro da política salarial: <strong>Gerente + RH</strong>; fora dela: <strong>VP da área</strong>"],
+    ["Desligamento","<strong>Gerente + RH</strong>; cargos de gestão: <strong>VP da área</strong>"],
+    ["Remuneração de administradores","<strong>Sócios</strong> (Cláusula 8ª, “c”)"]]},
+  {h:"Clientes e receita",i:[
+    ["Desconto sobre a tabela de frete ou de preço","Até [3%]: <strong>Gerente Comercial</strong>; até [7%]: <strong>Diretor ou VP da unidade</strong>; abaixo da margem mínima: <strong>Presidente + VP</strong>, com parecer financeiro"],
+    ["Contrato com cliente acima de 12 meses ou de R$ [10 mi] por ano","<strong>Presidente + VP da área</strong>, com análise de margem por rota"],
+    ["Limite de crédito de cliente","Até R$ [200 mil]: <strong>Gerente Financeiro</strong>; até R$ [1 mi]: <strong>Diretor Financeiro</strong>; acima: <strong>VP Financeiro</strong>"],
+    ["Cancelamento de CT-e ou nota fiscal","No mês: <strong>Faturamento + Coordenador Financeiro</strong>, com justificativa; acima de R$ [50 mil] ou mês fechado: <strong>Diretor Financeiro</strong>"]]},
+  {h:"Cadastros, adiantamentos e sistemas",i:[
+    ["Cadastro ou troca de conta bancária de fornecedor","Cadastro por Compras e validação por telefone pelo Financeiro. <strong>Nunca por e-mail</strong>; quem cadastra não paga"],
+    ["Adiantamento de viagem a motorista","Teto por viagem da política, aprovado pelo <strong>gestor da filial</strong>; prestação de contas em [5] dias"],
+    ["Adiantamento a fornecedor","<strong>Diretoria ou VP da área</strong>; garantia acima de R$ [100 mil]"],
+    ["Adiantamento a sócios ou familiares","<strong>Vedado</strong> (Aditivo, Cláusula 6.3)"],
+    ["Perfis de aprovação no Protheus e no Fluig","Configurados pela <strong>TI</strong> conforme esta matriz; revisados pela <strong>Auditoria Interna</strong> a cada trimestre"]]}
+];
+document.getElementById("rules-nv").innerHTML=NV.map(g=>`<div class="panel"><h3>${g.h}</h3><ul class="rlist">${g.i.map(([t,a])=>`<li><span class="t">${t}</span><span class="a">${a}</span></li>`).join("")}</ul></div>`).join("");
+
+/* ---------- casos ---------- */
+const CASES=[
+  {t:"Troca de 60 pneus para a frota de Londrina",q:{area:"opcorp",fam:"materiais",valor:180e3,orc:true,pr:false}},
+  {t:"Retífica de motor em oficina externa",q:{area:"transp",fam:"manut",valor:45e3,orc:true,pr:false}},
+  {t:"Consultoria para a Reforma Tributária",q:{area:"fin",fam:"consult",valor:120e3,orc:true,pr:false}},
+  {t:"Acordo em reclamação trabalhista de motorista",q:{area:"opcorp",fam:"juridico",valor:85e3,orc:true,pr:false}},
+  {t:"Reforma da pista de um posto",q:{area:"postos",fam:"capex",valor:420e3,orc:true,pr:false}},
+  {t:"Compra de 5 cavalos mecânicos, prevista no orçamento de capital",q:{area:"transp",fam:"capex",valor:3.4e6,orc:true,pr:false}},
+  {t:"A mesma compra, sem previsão no orçamento",q:{area:"transp",fam:"capex",valor:3.4e6,orc:false,pr:false}},
+  {t:"Desconto para receber título vencido de cliente",q:{area:"fin",fam:"perdas",valor:60e3,orc:true,pr:false}},
+  {t:"Venda de 10 carretas antigas",q:{area:"transp",fam:"ativos",valor:900e3,orc:true,pr:false}},
+  {t:"Patrocínio de evento regional",q:{area:"postos",fam:"patroc",valor:25e3,orc:true,pr:false}},
+  {t:"Folha mensal da Transportadora (acima de R$ 5 mi)",q:{area:"opcorp",fam:"recorrente",valor:6e6,orc:true,pr:false}},
+  {t:"Serviço de guincho de empresa de um familiar",q:{area:"transp",fam:"servicos",valor:80e3,orc:true,pr:true}},
+  {t:"Pedido por e-mail para trocar a conta bancária de um fornecedor",fixed:{l:"X",d:"Não se aprova por e-mail. Compras registra, o Financeiro confirma por telefone com o fornecedor, e quem cadastra não libera pagamento.",w:"É a porta de entrada mais comum de fraude em pagamentos."}},
+  {t:"Admissão de 3 motoristas fora do quadro aprovado",fixed:{l:5,d:"Presidente Antonio Deoclides Zini + Jefferson (VP Operações)",w:"Pessoal é a principal alavanca de custo; o quadro é aprovado no orçamento."}}
+];
+function renderCases(){
+  document.getElementById("cases").innerHTML=CASES.map((c,i)=>{
+    if(c.fixed)return `<article class="case"><h3>${c.t}</h3><div class="ans">${chip(c.fixed.l)}<div><p>${c.fixed.d}</p><p class="why">${c.fixed.w}</p></div></div></article>`;
+    const r=evaluate(c.q),A=AREAS[c.q.area];
+    const ctx=`${A.n.split(" – ")[0]} · ${c.q.fam==="recorrente"?"recorrente":fmt(c.q.valor)} · ${c.q.orc?"no orçamento":"fora do orçamento"}${c.q.pr?" · parte relacionada":""}`;
+    const why=[r.par.length?"Parecer: "+r.par.join("; "):"",r.rules.find(x=>!/Responsável executivo/.test(x))||""].filter(Boolean).join(" · ");
+    return `<article class="case"><h3>${c.t}</h3><span class="ctx num">${ctx}</span><div class="ans">${chip(r.l)}<div><p>${r.decide}</p>${why?`<p class="why">${why}</p>`:""}</div></div><button type="button" class="linkbtn" data-case="${i}">Abrir no simulador</button></article>`;
+  }).join("");
+}
+document.getElementById("cases").addEventListener("click",e=>{const b=e.target.closest("[data-case]");if(!b)return;const q=CASES[+b.dataset.case].q;
+  fa.value=q.area;ff.value=q.fam;fv.value=q.valor;fo.checked=q.orc;fp.checked=q.pr;renderSim();
+  const el=document.getElementById("simulador");el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  const r=document.getElementById("result");r.classList.remove("flash");void r.offsetWidth;r.classList.add("flash")});
+
+/* ---------- parâmetros ---------- */
+const PARAMS=[
+  {k:"L0",n:"Teto do gestor imediato (N1)",d:"Compras de materiais; as demais operações usam fração"},
+  {k:"L1",n:"Teto do gerente do departamento (N2)"},
+  {k:"L2",n:"Teto da diretoria (N3)"},
+  {k:"L3",n:"Teto do VP da área (N4)",d:"Acima dele, dois administradores"},
+  {k:"pr",n:"Parte relacionada vai aos sócios acima de"}
+];
+function val(p,k){return k==="pr"?PRESETS[p].pr:PRESETS[p].L[+k.slice(1)]}
+function cur(k){return k==="pr"?S.pr:S.L[+k.slice(1)]}
+function renderParams(){
+  const head=`<div class="prow h"><span class="pl">Parâmetro</span><span>Conservadora</span><span>Proposta</span><span>Ágil</span><span class="pc">Em avaliação (R$)</span></div>`;
+  document.getElementById("params").innerHTML=head+PARAMS.map(p=>`<div class="prow"><span class="pl"><b>${p.n}</b>${p.d?`<br><span class="small">${p.d}</span>`:""}</span>
+    ${["cons","prop","agil"].map(o=>`<button type="button" class="linkbtn opt num ${S.preset===o?"sel":""}" data-preset="${o}" title="Aplicar a régua ${o==="cons"?"Conservadora":o==="prop"?"Proposta":"Ágil"}">${fmt(val(o,p.k))}</button>`).join("")}
+    <span class="pc"><input type="number" min="0" step="1000" id="p-${p.k}" value="${cur(p.k)}" aria-label="${p.n}"></span></div>`).join("");
+}
+document.getElementById("params").addEventListener("change",e=>{const t=e.target;if(!t.id||!t.id.startsWith("p-"))return;const k=t.id.slice(2),v=Math.max(0,+t.value||0);
+  if(k==="pr")S.pr=v;else S.L[+k.slice(1)]=v;S.preset="custom";renderAll(false)});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-preset]");if(!b)return;const p=b.dataset.preset;S={preset:p,L:PRESETS[p].L.slice(),pr:PRESETS[p].pr};renderAll(true)});
+
+function renderAll(rebuildParams){
+  document.querySelectorAll(".seg [data-preset]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.preset===S.preset)));
+  renderLadder();renderSim();renderMatrix();renderCases();
+  if(rebuildParams!==false)renderParams();else document.querySelectorAll("#params .opt").forEach(b=>b.classList.remove("sel"));
+  const li=document.getElementById("li-pr");if(li)li.textContent=`Transação com parte relacionada acima de ${fmt(S.pr)}`;
+}
+renderAll(true);
+})();
+</script>
+
+</body>
+</html>
