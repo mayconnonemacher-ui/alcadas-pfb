@@ -204,7 +204,7 @@ tr.note td{background:var(--surface-2);font-size:13px;white-space:normal}
     <div class="head"><span class="eyebrow">Níveis</span><h2>Seis degraus de aprovação</h2>
       <p class="lede">Os tetos abaixo são os de compras de materiais, a referência. Cada tipo de operação usa uma fração dessa régua (a matriz mostra todos).</p></div>
     <div class="ladder" id="ladder"></div>
-    <p class="foot">Onde não há diretoria (Corporativo de Operações, Auto Postos e Governança), a faixa N3 é decidida pelo VP da área. A área de origem da despesa define quem é o “VP da área”. O Diretor Financeiro e de Controladoria dá parecer técnico, não assina sozinho.</p>
+    <p class="foot">Onde não há diretoria (Corporativo de Operações, Auto Postos e Governança), a faixa N3 é decidida pelo Vice-Presidente da área. A área de origem da despesa define quem é o “Vice-Presidente da área”. O Diretor Financeiro e de Controladoria dá parecer técnico, não assina sozinho.</p>
   </section>
 
   <section id="simulador">
@@ -243,7 +243,7 @@ tr.note td{background:var(--surface-2);font-size:13px;white-space:normal}
     <div class="head"><span class="eyebrow">Parâmetros</span><h2>O que os sócios precisam escolher</h2>
       <p class="lede">Três opções por parâmetro. Clique em uma opção para aplicar a régua completa, ou ajuste os valores à direita para uma régua própria; a página inteira se atualiza.</p></div>
     <div class="params" id="params"></div>
-    <p class="foot">Fixos em todas as opções: assinatura conjunta Presidente + VP acima de R$ 3 mi; despesa fora do orçamento acima de R$ 5 mi com os sócios; investimento fora do orçamento acima de R$ 1 mi com os sócios; pagamento sempre com duas aprovações eletrônicas. Antes da decisão, a Controladoria levanta no Protheus quantos pedidos de 2026 caíram em cada faixa, para medir quantas aprovações cada opção leva aos VPs.</p>
+    <p class="foot">Fixos em todas as opções: assinatura conjunta Presidente + Vice-Presidente acima de R$ 3 mi; despesa fora do orçamento acima de R$ 5 mi com os sócios; investimento fora do orçamento acima de R$ 1 mi com os sócios; pagamento sempre com duas aprovações eletrônicas. Antes da decisão, a Controladoria levanta no Protheus quantos pedidos de 2026 caíram em cada faixa, para medir quantas aprovações cada opção leva aos VPs.</p>
   </section>
 
   <section id="socios">
@@ -273,9 +273,10 @@ tr.note td{background:var(--surface-2);font-size:13px;white-space:normal}
 <script>
 (function(){
 const P={antonio:"Antonio Deoclides Zini",jean:"Jean Carlos Bevilacqua Zini",jefferson:"Jefferson Fernando Bevilacqua Zini",jaidson:"Jaidson Clei Bevilacqua Zini"};
-const VPT={antonio:"Presidente",jean:"VP Financeiro",jefferson:"VP Operações",jaidson:"VP Marketing e Postos"};
+const VPT={antonio:"Presidente",jean:"Vice-Presidente Financeiro",jefferson:"Vice-Presidente de Operações",jaidson:"Vice-Presidente de Marketing e Postos"};
+const vpLabel=k=>k==="antonio"?"Presidente (Antonio Deoclides Zini)":`${VPT[k]} (${P[k]})`;
 const AREAS={
-  transp:{n:"Transportadora – operação e filiais",vp:"jefferson",dir:"Diretor de Operações e Logística"},
+  transp:{n:"Transportadora – operação e filiais",vp:"jefferson",dir:"Diretor de Logística"},
   opcorp:{n:"Corporativo de Operações – Compras, Manutenção, RH/DP, Segurança",vp:"jefferson",dir:null},
   fin:{n:"Corporativo Financeiro – Financeiro, Controladoria, Contábil, Fiscal, TI",vp:"jean",dir:"Diretor Financeiro e de Controladoria"},
   postos:{n:"Auto Postos, TRR e Marketing",vp:"jaidson",dir:null},
@@ -312,23 +313,23 @@ function who(l,A,v){
   if(l===3)return A.dir;
   if(l===4)return vpName(A.vp);
   if(l===5){if(A.vp==="antonio")return "Presidente Antonio Deoclides Zini + um Vice-Presidente";
-    return v>FIX.conj?`Presidente Antonio Deoclides Zini + ${first(A.vp)} (${VPT[A.vp]})`:`${first(A.vp)} (${VPT[A.vp]}) + outro VP ou o Presidente`}
+    return v>FIX.conj?`Presidente (Antonio Deoclides Zini) e ${vpLabel(A.vp)}`:`${vpLabel(A.vp)} e outro Vice-Presidente ou o Presidente`}
   return "Reunião de Sócios";
 }
 function libera(l,A,v){
-  const vp=A.vp==="antonio"?"Presidente":`${first(A.vp)} (${VPT[A.vp]})`;
-  if(l==="S"||v>FIX.conj)return "Presidente + VP da área, com dupla aprovação eletrônica";
-  if(v<=FIX.libBaixa)return "Gerente Financeiro + Coordenador Financeiro";
-  if(v<=S.L[3])return `Gerente Financeiro + ${vp}`;
+  const vp=vpLabel(A.vp);
+  if(l==="S"||v>FIX.conj)return "Presidente + Vice-Presidente da área, com dupla aprovação eletrônica";
+  if(v<=FIX.libBaixa)return "Gerente Financeiro e Coordenador Financeiro, em aprovações separadas";
+  if(v<=S.L[3])return `Gerente Financeiro e ${vp}, em aprovações separadas`;
   return "Os dois administradores que aprovaram";
 }
 function evaluate(q){
   const A=AREAS[q.area],F=FAM.find(f=>f.id===q.fam),v=+q.valor||0,rules=[],par=[];
   if(A.obs)rules.push(A.obs);
-  if(F.special==="rec")return{l:"R",decide:"Não segue faixa de valor: a programação semanal é aprovada no Comitê de Caixa (Diretor Financeiro, Gerente Financeiro e VP da área).",par:["Controladoria confere a folha e os tributos antes da programação"],lib:`Gerente Financeiro + ${A.vp==="antonio"?"Presidente":first(A.vp)+" ("+VPT[A.vp]+")"}`,rules:rules.concat(["Vale para folha e encargos, tributos, parcelas de dívidas já contratadas, combustível e fornecimentos sob contrato vigente.","Hoje, pela Cláusula 14ª §7º, pagamentos acima de R$ 5 mi dependeriam só da assinatura do Presidente."])};
-  if(F.special==="fin")return{l:5,decide:"Segue a Parte C do Anexo I do Aditivo: renovação em condições iguais ou melhores por dois administradores; dívida nova e reestruturação conforme o Plano Anual de Financiamento e o Programa.",par:["Diretor Financeiro, sempre (custo, prazo, garantias, caixa de 13 semanas e alavancagem)"],lib:"Presidente + VP, com dupla aprovação eletrônica",rules:rules.concat(["Garantia a sócios pessoas físicas, familiares ou terceiros é vedada."])};
+  if(F.special==="rec")return{l:"R",decide:"Não segue faixa de valor: a programação semanal é aprovada no Comitê de Caixa (Diretor Financeiro, Gerente Financeiro e Vice-Presidente da área).",par:["Controladoria confere a folha e os tributos antes da programação"],lib:`Gerente Financeiro e ${vpLabel(A.vp)}, em aprovações separadas`,rules:rules.concat(["Vale para folha e encargos, tributos, parcelas de dívidas já contratadas, combustível e fornecimentos sob contrato vigente.","Hoje, pela Cláusula 14ª §7º, pagamentos acima de R$ 5 mi dependeriam só da assinatura do Presidente."])};
+  if(F.special==="fin")return{l:5,decide:"Segue a Parte C do Anexo I do Aditivo: renovação em condições iguais ou melhores por dois administradores; dívida nova e reestruturação conforme o Plano Anual de Financiamento e o Programa.",par:["Diretor Financeiro, sempre (custo, prazo, garantias, caixa de 13 semanas e alavancagem)"],lib:"Presidente + Vice-Presidente, com dupla aprovação eletrônica",rules:rules.concat(["Garantia a sócios pessoas físicas, familiares ou terceiros é vedada."])};
   if(q.pr){
-    if(v<=S.pr)return{l:5,decide:`Presidente + um VP cujo núcleo familiar não tenha interesse na operação`,par:v>50e3?["Diretor Financeiro (condições de mercado)"]:[],lib:libera(5,A,v),rules:rules.concat(["Se for recorrente entre empresas do grupo e estiver no contrato-quadro anual aprovado pelos sócios, segue o contrato.","Quem tem interesse, direto ou do núcleo familiar, não aprova."])};
+    if(v<=S.pr)return{l:5,decide:`Presidente + um Vice-Presidente cujo núcleo familiar não tenha interesse na operação`,par:v>50e3?["Diretor Financeiro (condições de mercado)"]:[],lib:libera(5,A,v),rules:rules.concat(["Se for recorrente entre empresas do grupo e estiver no contrato-quadro anual aprovado pelos sócios, segue o contrato.","Quem tem interesse, direto ou do núcleo familiar, não aprova."])};
     return{l:"S",decide:"Reunião de Sócios, por maioria absoluta do capital",par:["Diretor Financeiro (condições de mercado)"],lib:libera("S",A,v),rules:rules.concat([`Parte relacionada acima de ${fmt(S.pr)}: decisão dos sócios (Cláusula 40ª §5º e Aditivo, Cláusula 7.3).`,"Se for recorrente entre empresas do grupo e estiver no contrato-quadro anual, segue o contrato."])};
   }
   const c=ceilings(F);let l=F.ativos?5:1;
@@ -336,10 +337,10 @@ function evaluate(q){
   if(l<F.min){l=F.min;rules.push(`Este tipo de operação começa no nível N${F.min}.`)}
   if(!q.orc){
     par.push("Diretor Financeiro (operação fora do orçamento)");
-    if(F.capex){if(v>FIX.capexFora){l="S";rules.push("Investimento fora do orçamento acima de R$ 1 mi: decisão dos sócios (Cláusula 9ª, “d”).")}else{l=5;rules.push("Investimento fora do orçamento até R$ 1 mi: Presidente + VP da área.")}}
+    if(F.capex){if(v>FIX.capexFora){l="S";rules.push("Investimento fora do orçamento acima de R$ 1 mi: decisão dos sócios (Cláusula 9ª, “d”).")}else{l=5;rules.push("Investimento fora do orçamento até R$ 1 mi: Presidente + Vice-Presidente da área.")}}
     else{l=Math.min(5,l+1);rules.push("Fora do orçamento: sobe um nível.");if(v>FIX.foraSocios){l="S";rules.push("Fora do orçamento e acima de R$ 5 mi: decisão dos sócios (Cláusula 9ª, “h”).")}}
   }
-  if(l===3&&!A.dir){l=4;rules.push("Esta área não tem diretoria: a faixa N3 sobe direto ao VP.")}
+  if(l===3&&!A.dir){l=4;rules.push("Esta área não tem diretoria: a faixa N3 sobe direto ao Vice-Presidente.")}
   if(v>FIX.conj&&!par.length)par.push("Diretor Financeiro (valor acima de R$ 3 mi)");
   if(F.ativos){par.push("Diretor Financeiro (valor de mercado, gravames e impacto em covenants)");rules.push("Bem com gravame só é vendido com anuência do credor.")}
   if(F.perdas&&(l==="S"||l>=4)&&!par.length)par.push("Diretor Financeiro (acima do teto de N3)");
@@ -355,9 +356,9 @@ function renderLadder(){
   const st=[
     {l:1,t:"Gestor imediato",w:"Coordenador, gerente de filial ou de posto",e:`até ${fmt(c[0])}`},
     {l:2,t:"Gerente do departamento",w:"Compras, Manutenção, Financeiro, RH, TI, Comercial",e:`até ${fmt(c[1])}`},
-    {l:3,t:"Diretoria",w:"Diretor Financeiro e de Controladoria; Diretor de Operações e Logística",e:`até ${fmt(c[2])}`},
-    {l:4,t:"VP da área",w:"Jean (Financeiro), Jefferson (Operações), Jaidson (Marketing e Postos)",e:`até ${fmt(c[3])}`},
-    {l:5,t:"Dois administradores",w:"VP da área + outro VP ou o Presidente; acima de R$ 3 mi, Presidente Antonio + VP",e:`acima de ${fmt(c[3])}`},
+    {l:3,t:"Diretoria",w:"Diretor Financeiro e de Controladoria; Diretor de Logística",e:`até ${fmt(c[2])}`},
+    {l:4,t:"Vice-Presidente da área",w:"Vice-Presidentes: Jean (Financeiro), Jefferson (Operações) e Jaidson (Marketing e Postos)",e:`até ${fmt(c[3])}`},
+    {l:5,t:"Dois administradores",w:"Vice-Presidente da área + outro Vice-Presidente ou o Presidente; acima de R$ 3 mi, Presidente Antonio + Vice-Presidente",e:`acima de ${fmt(c[3])}`},
     {l:6,t:"Sócios",w:"Reunião de Sócios: fora do orçamento acima de R$ 5 mi e demais matérias reservadas",e:"conforme Acordo"}
   ];
   document.getElementById("ladder").innerHTML=st.map(s=>`<div class="step s${s.l}"><span class="lv">${s.l===6?"Sócios":"N"+s.l}</span><span class="who">${s.t}</span><span class="ex">${s.w}</span><span class="ex num"><b>${s.e}</b></span></div>`).join("");
@@ -387,35 +388,35 @@ function renderSim(){
 /* ---------- matriz ---------- */
 function renderMatrix(){
   const rows=FAM.filter(f=>!f.special).map(F=>{
-    if(F.ativos)return `<tr><th>${F.n}</th><td class="na">—</td><td class="na">—</td><td class="na">—</td><td class="na">—</td><td class="cell l5"><span>qualquer valor</span></td><td>Presidente + VP da área, com parecer financeiro</td></tr>`;
+    if(F.ativos)return `<tr><th>${F.n}</th><td class="na">—</td><td class="na">—</td><td class="na">—</td><td class="na">—</td><td class="cell l5"><span>qualquer valor</span></td><td>Presidente + Vice-Presidente da área, com parecer financeiro</td></tr>`;
     const c=ceilings(F);let cells="";
     for(let i=1;i<=4;i++){cells+=i<F.min?`<td class="na">—</td>`:`<td class="cell l${i} num"><span>até ${fmt(c[i-1])}</span></td>`}
     cells+=`<td class="cell l5 num"><span>acima de ${fmt(c[3])}</span></td>`;
-    const fora=F.capex?"Até R$ 1 mi: Presidente + VP; acima: sócios":"Sobe um nível; acima de R$ 5 mi: sócios";
+    const fora=F.capex?"Até R$ 1 mi: Presidente + Vice-Presidente; acima: sócios":"Sobe um nível; acima de R$ 5 mi: sócios";
     return `<tr><th>${F.n}${F.obs?`<div class="foot">${F.obs}</div>`:""}${F.par?`<div class="foot">Parecer do ${F.par} em todos os casos.</div>`:""}</th>${cells}<td>${fora}</td></tr>`;
   }).join("");
-  document.getElementById("mtx").innerHTML=`<thead><tr><th>Tipo de operação (dentro do orçamento)</th><th>N1 Gestor</th><th>N2 Gerente</th><th>N3 Diretoria</th><th>N4 VP da área</th><th>N5 Dois administradores</th><th>Fora do orçamento</th></tr></thead><tbody>${rows}
-  <tr class="note"><td colspan="7"><b>Pagamentos recorrentes</b> (folha, tributos, parcelas já contratadas, combustível sob contrato): não seguem faixa; programação semanal aprovada no Comitê de Caixa e liberada pelo Gerente Financeiro com o VP da área.</td></tr>
+  document.getElementById("mtx").innerHTML=`<thead><tr><th>Tipo de operação (dentro do orçamento)</th><th>N1 Gestor</th><th>N2 Gerente</th><th>N3 Diretoria</th><th>N4 Vice-Presidente da área</th><th>N5 Dois administradores</th><th>Fora do orçamento</th></tr></thead><tbody>${rows}
+  <tr class="note"><td colspan="7"><b>Pagamentos recorrentes</b> (folha, tributos, parcelas já contratadas, combustível sob contrato): não seguem faixa; programação semanal aprovada no Comitê de Caixa e liberada pelo Gerente Financeiro com o Vice-Presidente da área.</td></tr>
   <tr class="note"><td colspan="7"><b>Operações financeiras</b> (empréstimos, renovações, reestruturação, garantias): Parte C do Anexo I do Aditivo, sempre com parecer financeiro.</td></tr>
-  <tr class="note"><td colspan="7"><b>Partes relacionadas</b>: até ${fmt(S.pr)}, Presidente + um VP sem interesse; acima, sócios por maioria absoluta. Operações recorrentes entre empresas do grupo seguem o contrato-quadro anual.</td></tr></tbody>`;
+  <tr class="note"><td colspan="7"><b>Partes relacionadas</b>: até ${fmt(S.pr)}, Presidente + um Vice-Presidente sem interesse; acima, sócios por maioria absoluta. Operações recorrentes entre empresas do grupo seguem o contrato-quadro anual.</td></tr></tbody>`;
 }
 const NV=[
   {h:"Pessoas",i:[
     ["Admissão dentro do quadro aprovado","<strong>Gerente do departamento + RH</strong>"],
-    ["Admissão fora do quadro","<strong>Presidente + VP da área</strong>"],
+    ["Admissão fora do quadro","<strong>Presidente + Vice-Presidente da área</strong>"],
     ["Admissão de familiar até 3º grau","<strong>Conselho Consultivo</strong> (Cláusula 17ª, “d”)"],
-    ["Reajuste ou promoção","Dentro da política salarial: <strong>Gerente + RH</strong>; fora dela: <strong>VP da área</strong>"],
-    ["Desligamento","<strong>Gerente + RH</strong>; cargos de gestão: <strong>VP da área</strong>"],
+    ["Reajuste ou promoção","Dentro da política salarial: <strong>Gerente + RH</strong>; fora dela: <strong>Vice-Presidente da área</strong>"],
+    ["Desligamento","<strong>Gerente + RH</strong>; cargos de gestão: <strong>Vice-Presidente da área</strong>"],
     ["Remuneração de administradores","<strong>Sócios</strong> (Cláusula 8ª, “c”)"]]},
   {h:"Clientes e receita",i:[
-    ["Desconto sobre a tabela de frete ou de preço","Até [3%]: <strong>Gerente Comercial</strong>; até [7%]: <strong>Diretor ou VP da unidade</strong>; abaixo da margem mínima: <strong>Presidente + VP</strong>, com parecer financeiro"],
-    ["Contrato com cliente acima de 12 meses ou de R$ [10 mi] por ano","<strong>Presidente + VP da área</strong>, com análise de margem por rota"],
-    ["Limite de crédito de cliente","Até R$ [200 mil]: <strong>Gerente Financeiro</strong>; até R$ [1 mi]: <strong>Diretor Financeiro</strong>; acima: <strong>VP Financeiro</strong>"],
+    ["Desconto sobre a tabela de frete ou de preço","Até [3%]: <strong>Gerente Comercial</strong>; até [7%]: <strong>Diretor ou Vice-Presidente da unidade</strong>; abaixo da margem mínima: <strong>Presidente + Vice-Presidente</strong>, com parecer financeiro"],
+    ["Contrato com cliente acima de 12 meses ou de R$ [10 mi] por ano","<strong>Presidente + Vice-Presidente da área</strong>, com análise de margem por rota"],
+    ["Limite de crédito de cliente","Até R$ [200 mil]: <strong>Gerente Financeiro</strong>; até R$ [1 mi]: <strong>Diretor Financeiro</strong>; acima: <strong>Vice-Presidente Financeiro</strong>"],
     ["Cancelamento de CT-e ou nota fiscal","No mês: <strong>Faturamento + Coordenador Financeiro</strong>, com justificativa; acima de R$ [50 mil] ou mês fechado: <strong>Diretor Financeiro</strong>"]]},
   {h:"Cadastros, adiantamentos e sistemas",i:[
     ["Cadastro ou troca de conta bancária de fornecedor","Cadastro por Compras e validação por telefone pelo Financeiro. <strong>Nunca por e-mail</strong>; quem cadastra não paga"],
     ["Adiantamento de viagem a motorista","Teto por viagem da política, aprovado pelo <strong>gestor da filial</strong>; prestação de contas em [5] dias"],
-    ["Adiantamento a fornecedor","<strong>Diretoria ou VP da área</strong>; garantia acima de R$ [100 mil]"],
+    ["Adiantamento a fornecedor","<strong>Diretoria ou Vice-Presidente da área</strong>; garantia acima de R$ [100 mil]"],
     ["Adiantamento a sócios ou familiares","<strong>Vedado</strong> (Aditivo, Cláusula 6.3)"],
     ["Perfis de aprovação no Protheus e no Fluig","Configurados pela <strong>TI</strong> conforme esta matriz; revisados pela <strong>Auditoria Interna</strong> a cada trimestre"]]}
 ];
@@ -436,7 +437,7 @@ const CASES=[
   {t:"Folha mensal da Transportadora (acima de R$ 5 mi)",q:{area:"opcorp",fam:"recorrente",valor:6e6,orc:true,pr:false}},
   {t:"Serviço de guincho de empresa de um familiar",q:{area:"transp",fam:"servicos",valor:80e3,orc:true,pr:true}},
   {t:"Pedido por e-mail para trocar a conta bancária de um fornecedor",fixed:{l:"X",d:"Não se aprova por e-mail. Compras registra, o Financeiro confirma por telefone com o fornecedor, e quem cadastra não libera pagamento.",w:"É a porta de entrada mais comum de fraude em pagamentos."}},
-  {t:"Admissão de 3 motoristas fora do quadro aprovado",fixed:{l:5,d:"Presidente Antonio Deoclides Zini + Jefferson (VP Operações)",w:"Pessoal é a principal alavanca de custo; o quadro é aprovado no orçamento."}}
+  {t:"Admissão de 3 motoristas fora do quadro aprovado",fixed:{l:5,d:"Presidente (Antonio Deoclides Zini) e Vice-Presidente de Operações (Jefferson Fernando Bevilacqua Zini)",w:"Pessoal é a principal alavanca de custo; o quadro é aprovado no orçamento."}}
 ];
 function renderCases(){
   document.getElementById("cases").innerHTML=CASES.map((c,i)=>{
@@ -457,7 +458,7 @@ const PARAMS=[
   {k:"L0",n:"Teto do gestor imediato (N1)",d:"Compras de materiais; as demais operações usam fração"},
   {k:"L1",n:"Teto do gerente do departamento (N2)"},
   {k:"L2",n:"Teto da diretoria (N3)"},
-  {k:"L3",n:"Teto do VP da área (N4)",d:"Acima dele, dois administradores"},
+  {k:"L3",n:"Teto do Vice-Presidente da área (N4)",d:"Acima dele, dois administradores"},
   {k:"pr",n:"Parte relacionada vai aos sócios acima de"}
 ];
 function val(p,k){return k==="pr"?PRESETS[p].pr:PRESETS[p].L[+k.slice(1)]}
